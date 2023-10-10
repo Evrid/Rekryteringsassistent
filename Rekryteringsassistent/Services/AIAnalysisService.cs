@@ -22,7 +22,10 @@ namespace Rekryteringsassistent.Services
         public async Task<AIAnalysisResult> AnalyzeCandidate(Candidate candidate, Criteria criteria)
         {
             // Prepare the payload for GPT-3
-            var prompt = $"Analyze the candidate with the following skills: {string.Join(", ", criteria.Skills)} and experience: {criteria.MinimumExperience} years.";
+            //var prompt = $"Analyze the candidate with the following skills: {string.Join(", ", criteria.Skills)} and experience: {criteria.MinimumExperience} years.";
+            // Prepare the prompt to include the CV_Text
+            var prompt = $"Analyze the candidate named {candidate.FirstName} {candidate.LastName} with the following CV:\n{candidate.CV_Text}\nSkills required: {string.Join(", ", criteria.Skills)}\nMinimum experience required: {criteria.MinimumExperience} years.";
+
             var payload = new { prompt = prompt, max_tokens = 100 };
 
             // Serialize payload to JSON
