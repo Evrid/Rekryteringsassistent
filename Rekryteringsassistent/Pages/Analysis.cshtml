@@ -57,13 +57,14 @@
     </form>
 
     <!-- Display Analysis Result -->
-    @if (ViewBag.AnalysisResult != null)
+    @if (Model.AnalysisResult != null)
     {
         <div class="mt-5">
             <h2>Analysis Result</h2>
-            <p><strong>Rating:</strong> @ViewBag.AnalysisResult.Rating</p>
-            <p><strong>Strengths:</strong> @ViewBag.AnalysisResult.Strengths</p>
-            <p><strong>Weaknesses:</strong> @ViewBag.AnalysisResult.Weaknesses</p>
+            <p><strong>Rating:</strong> @Model.AnalysisResult.Rating</p>
+            <p><strong>Strengths:</strong> @Model.AnalysisResult.Strengths</p>
+            <p><strong>Weaknesses:</strong> @Model.AnalysisResult.Weaknesses</p>
         </div>
     }
+
 </div>
