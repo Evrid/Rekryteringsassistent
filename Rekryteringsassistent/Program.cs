@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Rekryteringsassistent.Data;
+using Rekryteringsassistent.Services;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,8 +19,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDefaultIdentity<IdentityUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+// Add services to the container
+builder.Services.AddScoped<AIAnalysisService>();
+
+builder.Services.AddScoped<GPT3ResponseProcessor>();
+
+
+// Add configuration sources
+builder.Configuration.AddUserSecrets<Program>();
 
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
