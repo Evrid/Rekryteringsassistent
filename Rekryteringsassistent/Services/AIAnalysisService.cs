@@ -1,6 +1,8 @@
-﻿
+﻿using System;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Rekryteringsassistent.Models;
 
@@ -21,33 +23,38 @@ namespace Rekryteringsassistent.Services
 
         public async Task<AIAnalysisResult> AnalyzeCandidate(Candidate candidate, Criteria criteria)
         {
-            // Prepare the payload for GPT-3
-            //var prompt = $"Analyze the candidate with the following skills: {string.Join(", ", criteria.Skills)} and experience: {criteria.MinimumExperience} years.";
-            // Prepare the prompt to include the CV_Text
             var prompt = $"Analyze the candidate named {candidate.FirstName} {candidate.LastName} with the following CV:\n{candidate.CV_Text}\nSkills required: {string.Join(", ", criteria.Skills)}\nMinimum experience required: {criteria.MinimumExperience} years.";
 
-            var payload = new { prompt = prompt, max_tokens = 100 };
+            // Adjust the payload to conform to the chat-based model endpoint
+            var payload = new
+            {
+                model = "gpt-3.5-turbo",
+                messages = new[]
+                {
+                    new { role = "system", content = "You are a helpful assistant."},
+                    new { role = "user", content = prompt }
+                }
+            };
 
-            // Serialize payload to JSON
-            var jsonPayload = JsonConvert.SerializeObject(payload);
+            string jsonPayload = JsonConvert.SerializeObject(payload);
             var data = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-
-            // Set the API key in the headers
-            //   httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {openAiKey}");
 
             httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {openAiKey}");
 
-            //   Console.WriteLine({ openAiKey});
-            // Make the API call
-            var response = await httpClient.PostAsync("https://api.openai.com/v1/engines/davinci-codex/completions", data);
+            Console.WriteLine("=== Headers ===");
+            foreach (var header in httpClient.DefaultRequestHeaders)
+            {
+                Console.WriteLine($"Header: {header.Key}, Value: {string.Join(",", header.Value)}");
+            }
 
-            // Handle the API response
+            var response = await httpClient.PostAsync("https://api.openai.com/v1/chat/completions", data);
+
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();
                 var gpt3Response = JsonConvert.DeserializeObject<GPT3Response>(result);
+                //something wrong with above
 
-                // Process GPT-3's response
                 var analysisResult = gpt3ResponseProcessor.ProcessGPT3Response(gpt3Response.choices[0]?.text);
 
                 return analysisResult;
@@ -58,9 +65,5 @@ namespace Rekryteringsassistent.Services
                 return null;
             }
         }
-
-    }  
-  
+    }
 }
-
-
