@@ -4,7 +4,7 @@ namespace Rekryteringsassistent.Models
 {
     public class Candidate
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string? Email { get; set; }
@@ -12,7 +12,7 @@ namespace Rekryteringsassistent.Models
         public byte[]? CV_Word { get; set; }
 
         public string? CV_Text { get; set; }
-        public AIAnalysisResult AnalysisResult { get; set; }
+        public AIAnalysisResult? AnalysisResult { get; set; }
     }
 
 }

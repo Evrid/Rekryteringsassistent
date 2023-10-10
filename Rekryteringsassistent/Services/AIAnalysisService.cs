@@ -33,8 +33,11 @@ namespace Rekryteringsassistent.Services
             var data = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
             // Set the API key in the headers
+            //   httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {openAiKey}");
+
             httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {openAiKey}");
 
+            //   Console.WriteLine({ openAiKey});
             // Make the API call
             var response = await httpClient.PostAsync("https://api.openai.com/v1/engines/davinci-codex/completions", data);
 

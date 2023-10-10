@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -34,10 +35,17 @@ namespace Rekryteringsassistent.Pages
         {
             if (!ModelState.IsValid)
             {
-                return Page();
+                Debug.WriteLine("Model state is not valid.");
+                // Additional debug information
+                foreach (var modelState in ViewData.ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        Debug.WriteLine($"Error: {error.ErrorMessage}");
+                    }
+                }
             }
-
-            AnalysisResult = await _aiAnalysisService.AnalyzeCandidate(Candidate, Criteria);
+                AnalysisResult = await _aiAnalysisService.AnalyzeCandidate(Candidate, Criteria);
 
             return Page();
         }
