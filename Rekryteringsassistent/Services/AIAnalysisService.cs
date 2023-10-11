@@ -27,7 +27,7 @@ namespace Rekryteringsassistent.Services
 
             // Adjust the payload to conform to the chat-based model endpoint
             var payload = new
-            {
+            { 
                 model = "gpt-3.5-turbo",
                 messages = new[]
                 {
