@@ -23,7 +23,7 @@ namespace Rekryteringsassistent.Services
 
         public async Task<AIAnalysisResult> AnalyzeCandidate(Candidate candidate, Criteria criteria)
         {
-            var prompt = $"Analyze the candidate named {candidate.FirstName} {candidate.LastName} with the following CV:\n{candidate.CV_Text}\nSkills required: {string.Join(", ", criteria.Skills)}\nMinimum experience required: {criteria.MinimumExperience} years.";
+            var prompt = $"Analyze the candidate named {candidate.FirstName} {candidate.LastName} with the following CV:\n{candidate.CV_Text}\nSkills required: {string.Join(", ", criteria.Skills)}\nMinimum experience required: {criteria.MinimumExperience} years. Respond with what they are good at and what they lack. Put rating of the candidate with a value between 0 to 10 at the end";
 
             // Adjust the payload to conform to the chat-based model endpoint
             var payload = new
@@ -31,7 +31,7 @@ namespace Rekryteringsassistent.Services
                 model = "gpt-3.5-turbo",
                 messages = new[]
                 {
-                    new { role = "system", content = "You are a helpful assistant."},
+                    new { role = "system", content = "You are a HR."},
                     new { role = "user", content = prompt }
                 }
             };

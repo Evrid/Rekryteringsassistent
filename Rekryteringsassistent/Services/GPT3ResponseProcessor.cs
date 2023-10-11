@@ -1,4 +1,5 @@
 ﻿using Rekryteringsassistent.Models;
+using System.Text.RegularExpressions;
 
 namespace Rekryteringsassistent.Services
 {
@@ -20,12 +21,22 @@ namespace Rekryteringsassistent.Services
                 if (sentence.ToLower().Contains("exceptional") || sentence.ToLower().Contains("good") || sentence.ToLower().Contains("strong"))
                 {
                     strengths += sentence + ". ";
-                    rating++;  // Increase rating for each strength
+                   // rating++;  // Increase rating for each strength
                 }
                 else if (sentence.ToLower().Contains("lack") || sentence.ToLower().Contains("weak"))
                 {
                     weaknesses += sentence + ". ";
-                    rating--;  // Decrease rating for each weakness
+                 //   rating--;  // Decrease rating for each weakness
+                }
+                else if (sentence.ToLower().Contains("rating"))
+                {
+                    // Use Regex to extract the first integer value in the sentence
+                    Match match = Regex.Match(sentence, @"\d+");
+                    if (match.Success)
+                    {
+                        int extractedRating = int.Parse(match.Value);
+                        rating = extractedRating;  // Set rating to the extracted value
+                    }
                 }
             }
 
