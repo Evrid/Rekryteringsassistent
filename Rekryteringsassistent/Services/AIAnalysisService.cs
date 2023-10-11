@@ -55,7 +55,7 @@ namespace Rekryteringsassistent.Services
                 var gpt3Response = JsonConvert.DeserializeObject<GPT3Response>(result);
                 //something wrong with above
 
-                var analysisResult = gpt3ResponseProcessor.ProcessGPT3Response(gpt3Response.choices[0]?.text);
+                var analysisResult = gpt3ResponseProcessor.ProcessGPT3Response(gpt3Response.choices[0]?.message?.content);
 
                 return analysisResult;
             }
