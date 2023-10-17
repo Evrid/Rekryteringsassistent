@@ -93,10 +93,11 @@ public class AnalysisController : ControllerBase
                 inputModel.Candidate.ConvertWordToText();
             }
             else
-            {
+            { 
                 _logger.LogWarning("Invalid file format: {FileExtension}", fileExtension);
                 return BadRequest("Invalid file format");
             }
+            //hehe
         }
         else
         {
