@@ -57,18 +57,7 @@ namespace Rekryteringsassistent.Pages
 
 
 
-            // Serialize the Candidate and Criteria objects to JSON
-            //var inputModel = new AnalysisInputModel { Candidate = Candidate, Criteria = Criteria };
-            //var json = JsonConvert.SerializeObject(inputModel);
-            //var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-
-            //            var formData = new MultipartFormDataContent
-            //{
-            //    { new StringContent(Candidate.FirstName), "Candidate.FirstName" },
-            //    { new StringContent(Candidate.LastName), "Candidate.LastName" },
-            //    // ... (Add other Candidate and Criteria properties)
-            //};
+  
 
             var formData = new MultipartFormDataContent
 {
@@ -77,10 +66,7 @@ namespace Rekryteringsassistent.Pages
     { new StringContent(Candidate.FirstName ?? ""), "Candidate.FirstName" },
     { new StringContent(Candidate.LastName ?? ""), "Candidate.LastName" },
     { new StringContent(Candidate.Email ?? ""), "Candidate.Email" },
-    // For byte[] data types, you could either convert it to base64 strings or handle it differently.
-    // { new ByteArrayContent(Candidate.CV_PDF ?? new byte[0]), "Candidate.CV_PDF" },
-    // { new ByteArrayContent(Candidate.CV_Word ?? new byte[0]), "Candidate.CV_Word" },
-    // ... Skip CV_PDF, and CV_Word; as you would handle it as a separate IFormFile or other ways
+ 
     { new StringContent(Candidate.CV_Text ?? ""), "Candidate.CV_Text" },
     // For Criteria class
       { new StringContent(Criteria.MinimumExperience?.ToString() ?? ""), "Criteria.MinimumExperience" },
@@ -89,11 +75,6 @@ namespace Rekryteringsassistent.Pages
 
 };
 
-
-            //var formData = new MultipartFormDataContent
-            //{
-            //    { content, "inputModel"}
-            //};
 
             using (var memoryStream = new MemoryStream())
             {

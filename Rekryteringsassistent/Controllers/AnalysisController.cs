@@ -112,53 +112,5 @@ public class AnalysisController : ControllerBase
     }
 
 
-    //[HttpPost]
-    //public async Task<ActionResult> Post([FromForm] Candidate candidate, [FromForm] Criteria criteria, [FromForm] IFormFile CV_File)
-    //{
-    //    // Log candidate and criteria
-    //    _logger.LogInformation("Received candidate: {Candidate}", candidate);
-    //    _logger.LogInformation("Received criteria: {Criteria}", criteria);
-
-    //    if (!ModelState.IsValid)
-    //    {
-    //        return BadRequest(ModelState);
-    //    }
-
-    //    if (CV_File != null)
-    //    {
-    //        // Log CV_File details
-    //        _logger.LogInformation("Received file with name: {FileName} and size: {Size}", CV_File.FileName, CV_File.Length);
-
-    //        string fileExtension = Path.GetExtension(CV_File.FileName).ToLower();
-    //        using var memoryStream = new MemoryStream();
-    //        await CV_File.CopyToAsync(memoryStream);
-
-    //        if (fileExtension == ".pdf")
-    //        {
-    //            candidate.CV_PDF = memoryStream.ToArray();
-    //            candidate.ConvertPdfToText();
-    //        }
-    //        else if (fileExtension == ".doc" || fileExtension == ".docx")
-    //        {
-    //            candidate.CV_Word = memoryStream.ToArray();
-    //            candidate.ConvertWordToText();
-    //        }
-    //        else
-    //        {
-    //            _logger.LogWarning("Invalid file format: {FileExtension}", fileExtension);
-    //            return BadRequest("Invalid file format");
-    //        }
-    //    }
-    //    else
-    //    {
-    //        _logger.LogWarning("CV_File is null");
-    //    }
-
-    //    Console.WriteLine(candidate.CV_Text);
-
-    //    var analysisResult = await _aiAnalysisService.AnalyzeCandidate(candidate, criteria);
-
-    //    return Ok(analysisResult);
-    //}
 
 }
