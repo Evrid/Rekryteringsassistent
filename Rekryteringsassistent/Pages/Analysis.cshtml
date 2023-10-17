@@ -13,7 +13,7 @@
 
    @* <form asp-controller="Analysis" asp-action="Index" method="post">*@
 
-        <form method="post">
+    <form method="post" enctype="multipart/form-data">
 
         <!-- Candidate Fields -->
         <fieldset>
@@ -35,10 +35,17 @@
                 <input asp-for="Candidate.Email" class="form-control" />
             </div>
 
-            <div class="form-group">
+        @*    <div class="form-group">
                 <label asp-for="Candidate.CV_Text">CV Text</label>
                 <textarea asp-for="Candidate.CV_Text" rows="5" class="form-control"></textarea>
+            </div>*@
+
+            <div class="form-group">
+                <label for="CV_File">Upload CV (PDF or Word)</label>
+                <input type="file" id="CV_File" name="CV_File" class="form-control" accept=".pdf,.doc,.docx" />
             </div>
+
+
         </fieldset>
 
         <!-- Criteria Fields -->

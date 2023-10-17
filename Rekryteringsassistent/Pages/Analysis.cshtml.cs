@@ -15,19 +15,27 @@ namespace Rekryteringsassistent.Pages
     {
         private readonly AIAnalysisService _aiAnalysisService;
         private readonly HttpClient _httpClient;
+        private readonly ILogger<AnalysisModel> _logger;
 
-        public AnalysisModel(AIAnalysisService aiAnalysisService, HttpClient httpClient)
+
+        public AnalysisModel(AIAnalysisService aiAnalysisService, HttpClient httpClient, ILogger<AnalysisModel> logger)
         {
             _aiAnalysisService = aiAnalysisService;
             _httpClient = httpClient;
+            _logger = logger; // Initialize logger
         }
 
 
+        //[JsonProperty(PropertyName = "Candidate")]
         [BindProperty]
         public Candidate Candidate { get; set; }
 
+       // [JsonProperty(PropertyName = "Criteria")]
         [BindProperty]
         public Criteria Criteria { get; set; }
+
+       // [BindProperty]
+        public IFormFile CV_File { get; set; }
 
         public AIAnalysisResult AnalysisResult { get; set; }
 
@@ -36,24 +44,71 @@ namespace Rekryteringsassistent.Pages
             // Initialize Candidate and Criteria 
             Candidate = new Candidate();
             Criteria = new Criteria();
+           
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
-                // Handle invalid model state
-                // ...
-                return Page();
+                return BadRequest(ModelState);
             }
 
-            // Serialize the Candidate and Criteria objects to JSON
-            var inputModel = new AnalysisInputModel { Candidate = Candidate, Criteria = Criteria };
-            var json = JsonConvert.SerializeObject(inputModel);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            // Make the HTTP POST request
-            var response = await _httpClient.PostAsync("https://localhost:7031/api/Analysis", content);
+
+
+            // Serialize the Candidate and Criteria objects to JSON
+            //var inputModel = new AnalysisInputModel { Candidate = Candidate, Criteria = Criteria };
+            //var json = JsonConvert.SerializeObject(inputModel);
+            //var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+
+            //            var formData = new MultipartFormDataContent
+            //{
+            //    { new StringContent(Candidate.FirstName), "Candidate.FirstName" },
+            //    { new StringContent(Candidate.LastName), "Candidate.LastName" },
+            //    // ... (Add other Candidate and Criteria properties)
+            //};
+
+            var formData = new MultipartFormDataContent
+{
+    // For Candidate class
+    { new StringContent(Candidate.Id?.ToString() ?? ""), "Candidate.Id" },
+    { new StringContent(Candidate.FirstName ?? ""), "Candidate.FirstName" },
+    { new StringContent(Candidate.LastName ?? ""), "Candidate.LastName" },
+    { new StringContent(Candidate.Email ?? ""), "Candidate.Email" },
+    // For byte[] data types, you could either convert it to base64 strings or handle it differently.
+    // { new ByteArrayContent(Candidate.CV_PDF ?? new byte[0]), "Candidate.CV_PDF" },
+    // { new ByteArrayContent(Candidate.CV_Word ?? new byte[0]), "Candidate.CV_Word" },
+    // ... Skip CV_PDF, and CV_Word; as you would handle it as a separate IFormFile or other ways
+    { new StringContent(Candidate.CV_Text ?? ""), "Candidate.CV_Text" },
+    // For Criteria class
+      { new StringContent(Criteria.MinimumExperience?.ToString() ?? ""), "Criteria.MinimumExperience" },
+    { new StringContent(Criteria.Skills != null ? string.Join(",", Criteria.Skills) : ""), "Criteria.Skills" },
+    { new StringContent(Criteria.Qualifications != null ? string.Join(",", Criteria.Qualifications) : ""), "Criteria.Qualifications" },
+
+};
+
+
+            //var formData = new MultipartFormDataContent
+            //{
+            //    { content, "inputModel"}
+            //};
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await CV_File.CopyToAsync(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                var streamContent = new StreamContent(memoryStream);
+                formData.Add(streamContent, "CV_File", CV_File.FileName);
+
+
+
+                Debug.WriteLine(JsonConvert.SerializeObject(Candidate));
+                Debug.WriteLine(JsonConvert.SerializeObject(Criteria));
+
+                // Make the HTTP POST request
+                var response = await _httpClient.PostAsync("https://localhost:7031/api/Analysis", formData);
 
             if (response.IsSuccessStatusCode)
             {
@@ -63,8 +118,13 @@ namespace Rekryteringsassistent.Pages
             }
             else
             {
-                // Handle error
-                // ...
+                    // Log error
+                    var reasonPhrase = response.ReasonPhrase; // Read the reason phrase
+                    var statusCode = response.StatusCode; // Read status code
+                    _logger.LogError($"An error occurred while making the API call. StatusCode: {statusCode}, ReasonPhrase: {reasonPhrase}");
+
+                }
+
             }
 
             return Page();
