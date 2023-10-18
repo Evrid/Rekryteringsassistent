@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Rekryteringsassistent.Pages
+namespace Rekryteringsassistent.Pages;
+
+public class CandidateAnalysisModel : PageModel
 {
-    public class CandidateAnalysisModel : PageModel
+    public void OnGet()
     {
-        public void OnGet()
-        {
-        }
     }
 }

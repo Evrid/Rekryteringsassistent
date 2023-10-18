@@ -3,11 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Rekryteringsassistent.Data;
 using Rekryteringsassistent.Services;
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -28,6 +23,11 @@ builder.Services.AddScoped<AIAnalysisService>();
 
 builder.Services.AddScoped<GPT3ResponseProcessor>();
 
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new() { Title = "RekryteringsassistentAPI", Version = "v1" });
+});
+
 
 // Add configuration sources
 builder.Configuration.AddUserSecrets<Program>();
@@ -44,12 +44,20 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSwagger();
+
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Rekryteringsassistent v1");
+});
 
 app.MapControllers();
 app.MapRazorPages();
