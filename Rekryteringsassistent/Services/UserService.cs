@@ -81,7 +81,38 @@ public class UserService
         return new ServiceResponse<LoggedInUserDto> { Success = false, Message = "Failed to create a new user" };
     }
 
+    public async Task<ServiceResponse<UserDto>> UpdateUserAsync(int userId, UpdateUserDto model)
+    {
+        var userEntity = await _userManager.FindByIdAsync(userId.ToString());
+        if (userEntity is null)
+        {
+            return new ServiceResponse<UserDto> { Success = false, Message = "User not found", ErrorCode = 404 };
+        }
+
+        _mapper.Map(model, userEntity);
     
+        var result = await _userManager.UpdateAsync(userEntity);
+    
+        if (result.Succeeded)
+        {
+            return new ServiceResponse<UserDto> { Data = _mapper.Map<UserDto>(userEntity) };
+        }
+        else
+        {
+            var errorMessages = new List<string>();
+
+            foreach (var error in result.Errors)
+            {
+                _logger.LogError($"Code: {error.Code}, Description: {error.Description}");
+                errorMessages.Add(error.Description);
+            }
+
+            var combinedErrorMessage = string.Join(" ", errorMessages); 
+            
+            return new ServiceResponse<UserDto> { Success = false, Message = combinedErrorMessage, ErrorCode = 400 };
+        }
+    }
+
     public async Task<ServiceResponse<LoggedInUserDto>> Authenticate(LoginDto model)
     {
         var user = await _userManager.FindByEmailAsync(model.EmailOrUsername!) == null

@@ -9,6 +9,7 @@ public class AutoMapperProfiles : Profile
     public AutoMapperProfiles()
     {
         CreateMap<RegisterUserDto, ApplicationUser>();
+        CreateMap<UpdateUserDto, ApplicationUser>();
         CreateMap<ApplicationUser, LoggedInUserDto>();
         CreateMap<ApplicationUser, UserDto>()
             .ForMember(dest => dest.DateOfBirth, opt => opt

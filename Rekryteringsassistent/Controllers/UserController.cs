@@ -55,7 +55,6 @@ public class UserController : ControllerBase
             new ResponseMessage { Success = false, Message = loginResult.Message });
     }
 
-    // todo: impement authorization
     [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult> GetCurrentUserProfile()
@@ -75,9 +74,13 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("me")]
-    public IActionResult UpdateCurrentUserProfile()
+    public async Task<ActionResult> UpdateCurrentUserProfile([FromBody] UpdateUserDto model)
     {
-        return Ok();
+        var userId = GetUserIdFromToken();
+        var result =  await _userService.UpdateUserAsync(userId, model);
+        return result.Success 
+            ? StatusCode(200, result.Data) 
+            : StatusCode(result.ErrorCode, new ResponseMessage { Success = false, Message = result.Message });
     }
 
     private int GetUserIdFromToken()

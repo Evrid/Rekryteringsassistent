@@ -1,8 +1,10 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Rekryteringsassistent.Data;
 using Rekryteringsassistent.Helpers;
-using Rekryteringsassistent.Interfaces;
 using Rekryteringsassistent.Models;
 using Rekryteringsassistent.Services;
 using TokenService = Rekryteringsassistent.Services.TokenService;
@@ -21,7 +23,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+    .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders()
+    .AddDefaultTokenProviders();
 
 // Add services to the container
 builder.Services.AddScoped<AIAnalysisService>();
@@ -38,7 +41,24 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
-
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = "Bearer";
+        options.DefaultChallengeScheme = "Bearer";
+    })
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "RekryteringsassistentAPI",
+            ValidAudience = "RekryteringsassistentUsers",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("c0d69fcd-a5fb-4714-8573-2e978966cea7"))
+        };
+    });
 
 // Add configuration sources
 builder.Configuration.AddUserSecrets<Program>();
@@ -57,6 +77,12 @@ if (!app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+
+app.UseCors(corsPolicyBuilder => corsPolicyBuilder
+    .AllowAnyOrigin()  
+    .AllowAnyMethod()
+    .AllowAnyHeader());
+
 app.UseStaticFiles();
 
 app.UseRouting();
